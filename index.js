@@ -22,6 +22,9 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
 });
 
+
+
+
 async function run(){
     try{
         const userCollection = client.db('nodeMongoCrud').collection('users');
