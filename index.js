@@ -32,6 +32,7 @@ async function run(){
         const serviceCollection = client.db('nodeMongoCrud').collection('services');
         const subscribersCollection = client.db('nodeMongoCrud').collection('subscribers');
         const enquiryCollection = client.db('nodeMongoCrud').collection('enquiry'); 
+        const enrollmentCollection = client.db('nodeMongoCrud').collection('enrollment');
 
            
   
