@@ -30,7 +30,7 @@ async function run(){
 
         const userCollection = client.db('nodeMongoCrud').collection('users');
         const serviceCollection = client.db('nodeMongoCrud').collection('services');
-        const subscribersCollection = client.db('nodeMongoCrud').collection('subscribers'); 
+        const subscribersCollection = client.db('nodeMongoCrud').collection('subscribers');  
 
 
 
@@ -119,10 +119,13 @@ async function run(){
         });
 
         app.post('/subscribers', async(req,res) =>{
-            const subscribers = req.body;
+            c subscribers = req.body;
+
             console.log(subscribers);
-            const result = await serviceCollection.insertOne(subscribers)
+            const result = await subscribersCollection.insertOne(subscribers)
+            console.log(result);
             res.send(result);
+            
         })
 
     }
