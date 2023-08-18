@@ -27,8 +27,14 @@ const client = new MongoClient(uri, {
 
 async function run(){
     try{
-        const userCollection = client.db('nodeMongoCrud').collection('users');
 
+        const userCollection = client.db('nodeMongoCrud').collection('users');
+        const serviceCollection = client.db('nodeMongoCrud').collection('services');
+        const subscribersCollection = client.db('nodeMongoCrud').collection('subscribers'); 
+
+
+
+        // ************************* Babysitter backend *******************
         app.get('/users', async(req, res) =>{
             const query = {};
             const cursor = userCollection.find(query);
@@ -80,6 +86,45 @@ async function run(){
         })
 
 
+
+
+
+
+
+
+    // ************************* Services backend *******************
+        app.get('/services', async(req, res) =>{
+            const query = {};
+            const cursor = serviceCollection.find(query);
+            const services = await cursor.toArray();
+            res.send(services);
+        });
+
+        app.post('/services', async(req,res) =>{
+            const services = req.body;
+            console.log(services);
+            const result = await serviceCollection.insertOne(services)
+            res.send(result);
+        })
+
+
+
+
+        // ************************* Subcribers backend *******************
+        app.get('/subscribers', async(req, res) =>{
+            const query = {};
+            const cursor = subscribersCollection.find(query);
+            const subscribers = await cursor.toArray();
+            res.send(subscribers);
+        });
+
+        app.post('/subscribers', async(req,res) =>{
+            const subscribers = req.body;
+            console.log(subscribers);
+            const result = await serviceCollection.insertOne(subscribers)
+            res.send(result);
+        })
+
     }
 
     finally{
@@ -89,7 +134,6 @@ async function run(){
 }
 
 run().catch(err => console.log(err));
-
 
 
 
