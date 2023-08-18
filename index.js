@@ -30,7 +30,9 @@ async function run(){
 
         const userCollection = client.db('nodeMongoCrud').collection('users');
         const serviceCollection = client.db('nodeMongoCrud').collection('services');
-        const subscribersCollection = client.db('nodeMongoCrud').collection('subscribers');  
+        const subscribersCollection = client.db('nodeMongoCrud').collection('subscribers');
+        const enrollmentCollection = client.db('nodeMongoCrud').collection('enrollment');   
+  
 
 
 
@@ -119,10 +121,27 @@ async function run(){
         });
 
         app.post('/subscribers', async(req,res) =>{
-            c subscribers = req.body;
-
+            let subscribers = req.body;
             console.log(subscribers);
             const result = await subscribersCollection.insertOne(subscribers)
+            console.log(result);
+            res.send(result);
+            
+        })
+
+
+        // ************************* Enrollment backend *******************
+        app.get('/enrollment', async(req, res) =>{
+            const query = {};
+            const cursor = enrollmentCollection.find(query);
+            const enrollment = await cursor.toArray();
+            res.send(enrollment);
+        });
+
+        app.post('/enrollment', async(req,res) =>{
+            let enrollment = req.body;
+            console.log(enrollment);
+            const result = await enrollmentCollection.insertOne(enrollment)
             console.log(result);
             res.send(result);
             
