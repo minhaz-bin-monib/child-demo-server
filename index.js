@@ -196,6 +196,15 @@ async function run(){
             
         })
 
+        app.delete('/enquiry/:id', async(req,res) =>{
+            const id = req.params.id;
+            //console.log('trying to delete',id);
+            const query = { _id: new ObjectId(id) }
+            const result = await enquiryCollection.deleteOne(query);
+            console.log(result);
+            res.send(result);
+        })
+
     }
 
     finally{
