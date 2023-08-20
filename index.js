@@ -215,14 +215,31 @@ async function run(){
             
         })
 
-        app.delete('/enquiry/:id', async(req,res) =>{
+        app.get('/enquiry/:id', async(req, res) =>{
             const id = req.params.id;
-            //console.log('trying to delete',id);
-            const query = { _id: new ObjectId(id) }
-            const result = await enquiryCollection.deleteOne(query);
-            console.log(result);
+            console.log(id);
+            const query = {_id: new ObjectId(id)}
+            const result = await enquiryCollection.findOne(query);
             res.send(result);
-        })
+        });
+        
+
+        app.put('/enquiry/:id', async(req, res) =>{
+            const id = req.params.id;
+            const filter = {_id: new ObjectId(id)}
+            const options = { upsert: true };
+            const update = req.body;
+            const eUser = {
+
+                 $set: {
+                    status : update.status,
+                 }
+            }
+
+            const result = await enquiryCollection.updateOne(filter, eUser, options);
+            res.send(result);
+            
+        });
 
     }
 
