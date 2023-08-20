@@ -1,4 +1,5 @@
 module.exports = (data) => {
+   console.log(data);
     const today = new Date();
     return `<!doctype html>
     <html>
@@ -7,18 +8,18 @@ module.exports = (data) => {
           <title>PDF Result Template</title>
           <style>
              .invoice-box {
-             max-width: 800px;
+             max-width: 900px;
              margin: auto;
-             padding: 30px;
+             padding: 10px;
              border: 1px solid #eee;
              box-shadow: 0 0 10px rgba(0, 0, 0, .15);
-             font-size: 16px;
-             line-height: 24px;
+             font-size: 15x;
+             line-height: 15px;
              font-family: 'Helvetica Neue', 'Helvetica',
              color: #555;
              }
              .margin-top {
-             margin-top: 50px;
+             margin-top: 10px;
              }
              .justify-center {
              text-align: center;
@@ -29,22 +30,22 @@ module.exports = (data) => {
              text-align: left;
              }
              .invoice-box table td {
-             padding: 5px;
+             padding: 3px;
              vertical-align: top;
              }
              .invoice-box table tr td:nth-child(2) {
              text-align: right;
              }
              .invoice-box table tr.top table td {
-             padding-bottom: 20px;
+             padding-bottom: 10px;
              }
              .invoice-box table tr.top table td.title {
-             font-size: 45px;
-             line-height: 45px;
+             font-size: 120px;
+             line-height: 20px;
              color: #333;
              }
              .invoice-box table tr.information table td {
-             padding-bottom: 40px;
+             padding-bottom: 20px;
              }
              .invoice-box table tr.heading td {
              background: #eee;
@@ -76,11 +77,47 @@ module.exports = (data) => {
              text-align: center;
              }
              }
+
+             #myTable {
+               border-collapse: collapse; /* Combines borders of adjacent cells */
+               border: 1px solid black; /* Adds a border to the table */
+           }
+           
+           #myTable th, #myTable td {
+               border: 1px solid black; /* Adds a border to table cells */
+               padding: 5px; /* Adds padding to cells for spacing */
+           }
           </style>
        </head>
        <body>
           <div class="invoice-box">
-            
+          <h4 style="text-align: right;">  Date: ${`${today.getDate()}. ${today.getMonth() + 1}. ${today.getFullYear()}.`}</h4>
+          <div>
+             <img  src="https://iubat.edu/wp-content/uploads/2019/01/Iubat-logo.png"
+                         style="margin-top: -60px; margin-left: 15px; width:100%; max-width:100px;">
+          </div>
+          <h3 style="text-align: center"> Enrolment Report </h3>
+          <table id="myTable">
+
+          <tr class="heading">
+             <td>ID</td>
+             <td>Parent</td>
+             <td>program</td>
+             <td>Phone</td>
+             <td>Email</td>
+             <td>Status</td>
+          </tr>
+          ${data.map(el =>`
+          <tr>
+              <td>${el._id}</td>
+              <td>${el.name}</td>
+              <td>${el.program}</td>
+              <td>${el.mobile1}</td>
+              <td>${el.email}</td>
+              <td>${el.status}</td>
+          </tr>
+      `)}
+       </table>
            
           </div>
        </body>
