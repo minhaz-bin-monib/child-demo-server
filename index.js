@@ -38,6 +38,7 @@ async function run(){
         const subscribersCollection = client.db('nodeMongoCrud').collection('subscribers');
         const enquiryCollection = client.db('nodeMongoCrud').collection('enquiry'); 
         const enrollmentCollection = client.db('nodeMongoCrud').collection('enrollment');
+        const aboutUSCollection = client.db('nodeMongoCrud').collection('AboutUs');
 
            
     // ************************************* PDF Generate ******************
@@ -240,6 +241,26 @@ async function run(){
             res.send(result);
             
         });
+
+
+
+        // ************************* AboutUs backend *******************
+        app.get('/aboutUs', async(req, res) =>{
+            const query = {};
+            const cursor = aboutUSCollection.find(query);
+            const aboutUs = await cursor.toArray();
+            res.send(aboutUs);
+        });
+
+        app.post('/aboutUs', async(req,res) =>{
+            const aboutUs = req.body;
+            console.log(aboutUs);
+            const result = await aboutUSCollection.insertOne(aboutUs)
+            res.send(result);
+        })
+
+
+
 
     }
 
