@@ -4,6 +4,7 @@ const pdf = require('html-pdf');
 const bodyParser = require('body-parser');
 const pdfTemplate = require('./documents');
 const { MongoClient, ObjectId } = require('mongodb');
+const SSLCommerzPayment = require('sslcommerz-lts')
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -15,6 +16,10 @@ app.use(bodyParser.json());
 
 // user: dummyuser
 // password: ExFGMzfCCY2aJPsV
+
+const store_id = 'child64ea15329326a';
+const store_passwd = 'child64ea15329326a@ssl';
+const is_live = false //true for live, false for sandbox
 
 
 
@@ -39,6 +44,8 @@ async function run() {
         const enquiryCollection = client.db('nodeMongoCrud').collection('enquiry');
         const enrollmentCollection = client.db('nodeMongoCrud').collection('enrollment');
         const aboutUSCollection = client.db('nodeMongoCrud').collection('AboutUs');
+        const paymentCollection = client.db('nodeMongoCrud').collection('payment');
+
 
 
         // ************************************* PDF Generate ******************
@@ -144,11 +151,14 @@ async function run() {
             const filter = { _id: new ObjectId(id) }
             const options = { upsert: true };
             const updateUser = req.body;
+            console.log(updateUser);
             const eUser = {
 
                 $set: {
                     service_name: updateUser.service_name,
-                    service_details: updateUser.service_details
+                    service_details: updateUser.service_details,
+                    currentDate: updateUser.currentDate
+
                 }
             }
 
@@ -166,6 +176,82 @@ async function run() {
             res.send(result);
         })
 
+
+
+        // ************************* Payment backend *******************
+        app.get('/payment', async (req, res) => {
+            const query = {};
+            const cursor = paymentCollection.find(query);
+            const payment = await cursor.toArray();
+            res.send(payment);
+        });
+
+        app.post('/payment', async (req, res) => {
+            const payment = req.body;
+            console.log(payment);
+            const result = await paymentCollection.insertOne(payment);
+
+
+
+            const data = {
+                total_amount: 100,
+                currency: 'BDT',
+                tran_id: 'REF123', // use unique tran_id for each api call
+                success_url: `http://localhost:5000/paySuccess/`+payment.p_enroll,
+                fail_url: 'http://localhost:3030/fail',
+                cancel_url: 'http://localhost:3030/cancel',
+                ipn_url: 'http://localhost:3030/ipn',
+                shipping_method: 'Courier',
+                product_name: 'Computer.',
+                product_category: 'Electronic',
+                product_profile: 'general',
+                cus_name: 'Customer Name',
+                cus_email: 'customer@example.com',
+                cus_add1: 'Dhaka',
+                cus_add2: 'Dhaka',
+                cus_city: 'Dhaka',
+                cus_state: 'Dhaka',
+                cus_postcode: '1000',
+                cus_country: 'Bangladesh',
+                cus_phone: '01711111111',
+                cus_fax: '01711111111',
+                ship_name: 'Customer Name',
+                ship_add1: 'Dhaka',
+                ship_add2: 'Dhaka',
+                ship_city: 'Dhaka',
+                ship_state: 'Dhaka',
+                ship_postcode: 1000,
+                ship_country: 'Bangladesh',
+            };
+            const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live)
+            sslcz.init(data).then(apiResponse => {
+                // Redirect the user to payment gateway
+                let GatewayPageURL = apiResponse.GatewayPageURL
+                res.send({url: GatewayPageURL})
+                console.log('Redirecting to: ', GatewayPageURL)
+            });
+        })
+
+
+        app.post('/paySuccess/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) }
+            const options = { upsert: true };
+            const updateUser = req.body;
+            console.log(updateUser);
+            const eUser = {
+
+                $set: {
+                    paymentStatus: "paid"
+
+                }
+            }
+
+            const result = await enrollmentCollection.updateOne(filter, eUser, options);
+            res.send("Thank you for your Payment");
+
+
+        })
 
 
 
@@ -221,6 +307,8 @@ async function run() {
 
                 $set: {
                     status: update.status,
+                    paymentStatus: update.paymentStatus
+
                 }
             }
 
